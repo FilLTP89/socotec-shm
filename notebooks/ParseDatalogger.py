@@ -10,20 +10,6 @@ import re
 
 def datehour(s): return s.split("__0_")[1].split(".txt")[0]
 
-def DaskParseDb(pathData=None):
-    from dask.distributed import Client
-    client = Client(n_workers=1, threads_per_worker=4,
-                    processes=True, memory_limit='2GB')
-    if not pathData:
-        pathData = os.path.join(os.path.abspath(""), r'..', r'data', r'csv_data')
-
-    datalog = dd.read_csv(os.path.join(pathData, 
-                                       "{:>s}".format("Datalogger_*.csv")),
-                          parse_dates=["Date_Heure"])
-    import pdb
-    pdb.set_trace()
-
-
 def Txt2Parquet(pathData=None):
     Txt2Csv(pathData)
     Csv2Parquet(pathData)
@@ -41,7 +27,8 @@ def Csv2Parquet(pathData=None):
                                     "Datalogger.parquet"),
                        engine='pyarrow')
 
-def Txt2Csv(pathData=None):
+
+def Txt2Csv(pathData=None, correct=False):
     if not pathData:
         pathData=os.path.join(os.path.abspath(""), r'..', r'data', r'rawtxt_data')
     rawfile_list = [f for f in os.listdir(pathData) if f.endswith('.txt')]
