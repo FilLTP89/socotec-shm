@@ -1,12 +1,15 @@
 ## -*- coding: utf-8 -*-
 #!/usr/bin/env python3
 u"""General informations"""
+import pdb
+from IPython.display import Image
 import os
 from scipy.signal import detrend
 import dask.dataframe as dd
 import xarray as xr
 
 from matplotlib import pyplot as plt
+from statsmodels.tsa.seasonal import seasonal_decompose
 
 __author__ = "Filippo Gatti"
 __copyright__ = "Copyright 2022, CentraleSupélec (LMPS UMR CNRS 9026)"
@@ -23,19 +26,6 @@ plt.rcParams.update({
     "font.family": "Helvetica"
 })
 
-# client = Client(n_workers=2, 
-#                 threads_per_worker=2, 
-#                 memory_limit="1GB")
-
-pathData = os.path.join(os.path.abspath(""),
-                        r'..',r'data',r'parquet_data')
-df = dd.read_parquet(os.path.join(pathData, "Datalogger.parquet"), 
-                     engine='pyarrow')
-df = df.set_index("Date_Heure", sorted=True)
-df = df.persist()
-da = xr.DataArray(df.to_dask_array(lengths=True),
-                  dims=("Time", "Datalog"))
-
 
 def detrend_dim(da, dim, deg=1):
     """detrend along a single dimension."""
@@ -46,9 +36,22 @@ def detrend_dim(da, dim, deg=1):
     # remove the trend
     return da - fit
 
-detrended = detrend_dim(da, dim="Time")
+pathData = os.path.join(os.path.abspath(""),
+                        r'..',r'data',r'parquet_data')
+df = dd.read_parquet(os.path.join(pathData, "Datalogger.parquet"), 
+                     engine='pyarrow')
+df = df.set_index("Date_Heure", sorted=True)
+# df = df.persist()
+# xa = xr.DataArray(df, 
+#                   coords=[df.index, ["u_r", "u_θ", "T"]], 
+#                   dims=("Time", "Datalog")).sortby("Time")
 
+# xa_d = detrend_dim(xa, dim="Time")
 
+# res = seasonal_decompose(df[["Capteur_1","Capteur_2"]], 
+#                          model='additive')
+
+pdb.set_trace()
 fig, ax = plt.subplots(3, 1,
                        sharex=True,
                        sharey=False,
@@ -57,6 +60,8 @@ fig, ax = plt.subplots(3, 1,
 
 
 average = "24h"
+# xa = xa.resample(Time="1D")
+# xa_d = xa_d.resample(Time="1D")
 df[["Capteur_1"]].resample(average).mean().compute().plot(
     ax=ax[0], color='black', legend=False, )
 df[["Capteur_2"]].resample(average).mean().compute().plot(
@@ -65,6 +70,11 @@ df[["Temperature"]].resample(average).mean().compute().plot(
     ax=ax[2], color='black', legend=False, )
 
 
+# ax[0].plot(xa.Time.values, xa.values[:, 0], label=r'$\ddot{u}_r(t)$')
+# ax[1].plot(xa.Time.values, xa.values[:, 1], label=r'$\ddot{u}_theta(t)$')
+# ax[2].plot(xa.Time.values, xa.values[:, 2], label=r'$T(t)$')
+# ax[0].plot(xa.Time.values, xa_d.values[:, 0], label=r'$\tilde\ddot{u}_r(t)$')
+# ax[1].plot(xa.Time.values, xa_d.values[:, 1], label=r'$\tilde\ddot{u}_theta(t)$')
 # plt.show()
 
 # ax[0].get_legend().remove() #.legend(labels=(r'$\ddot{u}_r(t)$'))
