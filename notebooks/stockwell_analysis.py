@@ -27,7 +27,7 @@ import numpy as np
 import pywt
 from stockwell import st
 
-from read_datalogger import prep_GANTNER_dat_txt
+from notebooks.ParseDatalogger import prep_GANTNER_dat_txt
 from scipy.signal import detrend, decimate
 # from scipy.fft import fft, fftfreq, fftshift
 # from scipy.signal import find_peaks

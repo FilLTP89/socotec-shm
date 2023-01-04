@@ -37,7 +37,7 @@ import pandas as pd
 import numpy as np
 import dmd_functions as dmd
 
-from read_datalogger import prep_GANTNER_dat_txt
+from notebooks.ParseDatalogger import prep_GANTNER_dat_txt
 from scipy.signal import detrend, decimate
 
 

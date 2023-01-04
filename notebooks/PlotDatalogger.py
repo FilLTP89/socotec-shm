@@ -9,7 +9,6 @@ import dask.dataframe as dd
 import xarray as xr
 
 from matplotlib import pyplot as plt
-from statsmodels.tsa.seasonal import seasonal_decompose
 
 __author__ = "Filippo Gatti"
 __copyright__ = "Copyright 2022, CentraleSupélec (LMPS UMR CNRS 9026)"
