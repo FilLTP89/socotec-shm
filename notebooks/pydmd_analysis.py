@@ -75,17 +75,6 @@ df = df.map_partitions(lambda df: df.assign(v_r=cumulative_trapezoid(y=df.a_r,
 #            forward_backward=True,
 #            opt=True)
 
-# params = df.Temperature.map_partitions(lambda x: x.mean()).compute().values[:4]
-
-# dmds = [HODMD(svd_rank=0,
-#               forward_backward=True,
-#               exact=True,
-#               opt=True,
-#               d=1200)]
-# pdmd = ParametricDMD(dmds, 
-#                      POD(svd_rank=-1), 
-#                      RBF())
-
 
 
 fss = '1S'
@@ -96,6 +85,18 @@ X_r = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
 X_t = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
              ["v_t"]
             ].sort_values("Date_Heure").resample(fss).first().compute()
+T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
+
+
+
+dmds = [HODMD(svd_rank=0,
+              forward_backward=True,
+              exact=True,
+              opt=True,
+              d=100)]
+pdmd = ParametricDMD(dmds,
+                     POD(svd_rank=-1),
+                     RBF())
 
 dmd = HODMD(svd_rank=0,
             forward_backward=True,
