@@ -5,6 +5,7 @@ import os
 import sys
 from os import listdir
 from os.path import join as opj
+import xarray as xr
 import dask.dataframe as dd
 from matplotlib import pyplot as plt
 import re
@@ -79,15 +80,21 @@ df = df.map_partitions(lambda df: df.assign(v_r=cumulative_trapezoid(y=df.a_r,
 
 fss = '1S'
 
-X_r = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39", 
-             ["v_r"]
-            ].sort_values("Date_Heure").resample(fss).first().compute()
-X_t = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
-             ["v_t"]
-            ].sort_values("Date_Heure").resample(fss).first().compute()
+
 T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
 
 
+# X_r = df.v_r.sort_values("Date_Heure").resample(fss).first().compute()
+# X_t = df.v_t.sort_values("Date_Heure").resample(fss).first().compute()
+
+# list_of_delayed = df.map_partitions(lambda x: x.v_r).to_delayed().to_list()
+# X_r = dask.compute(*list_of_delayed)
+
+xa = xr.DataArray(df,
+                  coords=[df.index, ["v_r", "v_t", "T"]],
+                  dims=("Time", "Datalog")).sortby("Time")
+
+pdb.set_trace()
 
 dmds = [HODMD(svd_rank=0,
               forward_backward=True,
@@ -98,22 +105,31 @@ pdmd = ParametricDMD(dmds,
                      POD(svd_rank=-1),
                      RBF())
 
-dmd = HODMD(svd_rank=0,
-            forward_backward=True,
-            exact=True,
-            opt=True,
-            d=100)
-
-dmd.fit(X=X_r.values.reshape(-1, 1).T)
 
 
-dmd.dmd_time['tend'] *= 2 # int((24*60+15)*60*100/int(fss.split('S')[0]))
+#######
+# X_r = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
+#              ["v_r"]
+#              ].sort_values("Date_Heure").resample(fss).first().compute()
+# X_t = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
+#              ["v_t"]
+#              ].sort_values("Date_Heure").resample(fss).first().compute()
+# dmd = HODMD(svd_rank=0,
+#             forward_backward=True,
+#             exact=True,
+#             opt=True,
+#             d=100)
 
-dtm = (X_r.index.values[1] - X_r.index.values[0])/np.timedelta64(1, 's')
-vt0 = X_r.index.values[0]
+# dmd.fit(X=X_r.values.reshape(-1, 1).T)
 
-dmd_vtm = vt0 + (dmd.dmd_timesteps*dtm*1e9).astype('timedelta64[ns]')
 
+# dmd.dmd_time['tend'] *= 2 # int((24*60+15)*60*100/int(fss.split('S')[0]))
+
+# dtm = (X_r.index.values[1] - X_r.index.values[0])/np.timedelta64(1, 's')
+# vt0 = X_r.index.values[0]
+
+# dmd_vtm = vt0 + (dmd.dmd_timesteps*dtm*1e9).astype('timedelta64[ns]')
+########
 
 # plt.plot(X_r.values.reshape(-1, 2))
 # plt.plot(dmd.reconstructed_data.real.T)
