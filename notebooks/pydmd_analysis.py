@@ -65,23 +65,10 @@ df = df.map_partitions(lambda df: df.assign(v_r=cumulative_trapezoid(y=df.a_r,
                              "v_t": 'f8',}
                        )
 
+fss = '10S'
+df = df.resample(fss).first()
 
-
-    
-# sub_dmd = SubspaceDMD(svd_rank=-1, opt=True,)
-# dmd = MrDMD(sub_dmd, max_cycles=10, max_level=10)
-# dmd = RDMD(oversampling=10,
-#            power_iters=2,
-#            svd_rank=-1,
-#            forward_backward=True,
-#            opt=True)
-
-
-
-fss = '1S'
-
-
-T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
+# T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
 
 
 # X_r = df.v_r.sort_values("Date_Heure").resample(fss).first().compute()
@@ -90,11 +77,13 @@ T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
 # list_of_delayed = df.map_partitions(lambda x: x.v_r).to_delayed().to_list()
 # X_r = dask.compute(*list_of_delayed)
 
-xa = xr.DataArray(df,
-                  coords=[df.index, ["v_r", "v_t", "T"]],
-                  dims=("Time", "Datalog")).sortby("Time")
-
+# xa = xr.DataArray(df[["v_r", "v_t", "Temperature"]],
+#                   coords=[df.index, ["v_r", "v_t", "T"]],
+#                   dims=("Time", "Datalog")).sortby("Time")
+chunk_sizes = df.map_partitions(len).compute().values
+da = df[["v_r", "v_t", "Temperature"]].to_dask_array(lengths=chunk_sizes)
 pdb.set_trace()
+#https: // stackoverflow.com/questions/72015205/iterating-through-dask-array-chunks
 
 dmds = [HODMD(svd_rank=0,
               forward_backward=True,
