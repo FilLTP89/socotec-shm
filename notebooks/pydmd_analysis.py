@@ -65,10 +65,11 @@ df = df.map_partitions(lambda df: df.assign(v_r=cumulative_trapezoid(y=df.a_r,
                              "v_t": 'f8',}
                        )
 
-fss = '10S'
-df = df.resample(fss).first()
+fss = '1S'
+rec = 15*60*np.timedelta64(fss.strip('S'), 's').astype(np.int64)
+df = df.resample(fss).first().dropna()
 
-# T = df.Temperature.map_partitions(lambda x: x.mean()).compute()
+# 
 
 
 # X_r = df.v_r.sort_values("Date_Heure").resample(fss).first().compute()
@@ -80,9 +81,20 @@ df = df.resample(fss).first()
 # xa = xr.DataArray(df[["v_r", "v_t", "Temperature"]],
 #                   coords=[df.index, ["v_r", "v_t", "T"]],
 #                   dims=("Time", "Datalog")).sortby("Time")
-chunk_sizes = df.map_partitions(len).compute().values
+chunk_sizes = list(df.map_partitions(len).compute().values)
+
 da = df[["v_r", "v_t", "Temperature"]].to_dask_array(lengths=chunk_sizes)
-pdb.set_trace()
+
+
+da_r = np.stack(
+                [b.compute().T for b in da[:, 0].blocks if b.size == rec]
+                ).reshape(-1, 1, rec)
+da_t = np.stack(
+                [b.compute().T for b in da[:, 1].blocks if b.size == rec]
+                ).reshape(-1, 1, rec)
+T = np.stack([b.mean().compute() for b in da[:, 2].blocks if b.size == rec])
+# da = [b for b in da] if b.size == rec
+# da 
 #https: // stackoverflow.com/questions/72015205/iterating-through-dask-array-chunks
 
 dmds = [HODMD(svd_rank=0,
@@ -94,7 +106,8 @@ pdmd = ParametricDMD(dmds,
                      POD(svd_rank=-1),
                      RBF())
 
-
+pdb.set_trace()
+pdmd.fit(da_r,T)
 
 #######
 # X_r = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
