@@ -8,6 +8,14 @@ from sympy import bessely as Yb
 from sympy import vectorize, diff, sin, cos
 
 import pdb
+     """_summary_
+     (1) Mofakhami, M. R.; Toudeshky, H. H.; Hashemi, Sh. H. 
+     Finite Cylinder Vibrations with Different End Boundary Conditions. 
+     Journal of Sound and Vibration 2006, 297 (1-2), 293-314. 
+     https://doi.org/10.1016/j.jsv.2006.03.041.
+     """
+
+
 
 (ν, ω) = sp.symbols('ν ω')
 (α, α1, α2, α23, α4) = sp.symbols('α α1 α2 α23 α4')
