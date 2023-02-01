@@ -42,7 +42,7 @@ M = 10  # number of longitudinal modes
 # λm = π*m/L # wavelength of the m-th tuned harmonic
 λ_s = sp.symbols("λ_0:{:d}".format(M+1))
 λm = Matrix(M+1, 1, λ_s)
-
+cosmπ = Matrix([cos(pi*m) for m in range(0, M+1)])
 λm2 = sp.diag(*λ_s)*λm
 K = E*h/(1.0-σ**2) # in-plane stifness
 D = E*h**3/12.0/(1.0-σ**2) # flexural stiffness
@@ -85,13 +85,30 @@ hn = Matrix(N+1, 1, h_s)
 Amn = Matrix(M+1, N+1, sp.symbols('A_0:{:d}(0:{:d})'.format(M+1, N+1)))
 Bmn = Matrix(M+1, N+1, sp.symbols('B_0:{:d}(0:{:d})'.format(M+1, N+1)))
 Cmn = Matrix(M+1, N+1, sp.symbols('C_0:{:d}(0:{:d})'.format(M+1, N+1)))
-ΣAn = sp.ones(1,Amn.shape[0])*Amn
-ΣBn = sp.ones(1,Bmn.shape[0])*Bmn
-ΣCn = sp.ones(1,Cmn.shape[0])*Cmn
+ΣmAnm = sp.ones(1,Amn.shape[0])*Amn
+ΣmBnm = sp.ones(1,Bmn.shape[0])*Bmn
+ΣmCnm = sp.ones(1,Cmn.shape[0])*Cmn
 eq6a = an-\
-     (7.0*σ*L/(3.0*π*R)+3.0*π*R*γ/(4.0*L))*fn-\
-     (4.0*σ*L**3/(3.0*π**3*R)+L*γ*R/π)*hn-\
-    -((k1/K)*ΣAn-(σ*n/R)*ΣBn-(σ/R)*ΣCn-γ*R*λm2.T*Cmn).T
+       (7.0*σ*L/(3.0*π*R)+3.0*π*R*γ/(4.0*L))*fn-\
+       (4.0*σ*L**3/(3.0*π**3*R)+L*γ*R/π)*hn-\
+      -((k1/K)*ΣmAnm-(σ*n/R)*ΣmBnm-(σ/R)*ΣmCnm-γ*R*λm2.T*Cmn).T
+      
+eq6b = (1.0-σ)*(1.0+γ)/2.0*cn+(1.0-σ)*γ*n/2.0*en-\
+       (1.0-σ)*n/(2.0*R)*ΣmAnm.T-(k2/K)*ΣmBnm.T
+       
+eq6c = -4.0/(L*R)*an-2.0/(L*R)*bn+(3.0-σ)*n/(2.0*R**2)*cn+\
+       (2.0-σ)*n**2/R**2*en+(7.0*L*k3)/(3.0*π*D)*fn-gn+\
+       (4.0*L**3*k3)/(3.0*π**3*D)*hn-\
+       (λm2.T*Amn/R-(1.0-σ)*n**2/(2.0*R**3)*ΣmAnm).T-\
+       (k3/K)*ΣmCnm.T
+       
+eq6d = -an/R+((3.0*π)/(4.0*L)+(7.0*σ*L*n**2)/(3.0*π*R**2))*fn+\
+       (L/π)*hn-(k4/D)*en-(σ*n/R**2)*ΣmBnm.T-\
+       (λm2.T*Cmn).T-(σ*n**2/R**2)*ΣmCnm.T
+       
+eq6e = -bn-((3.0*π*γ*R)/(4.0*L)+(7.0*σ*L)/(3.0*π*R))*en-\
+       ((L*γ*R)/π+(4.0*σ*L**3)/(3.0*π**3*R))*gn-\
+       ((k5/K)*cosmπ.T*Amn).T
 pdb.set_trace()
 
 
@@ -101,8 +118,8 @@ pdb.set_trace()
 # abcdefgh = Array([av, bv, cv, dv, ev, fv, gv, hv], (8*len(av),))
 # ABC = Array([Av, Bv, Cv], (3*len(Av),))
 
+sp.solve([eq6a, eq6b, eq6c, eq6d, eq6e], (*a_s, *b_s, *c_s, *d_s, *e_s, *f_s, *g_s, *h_s))
+# linsolve([eq6a, eq6b, eq6c],(an,bn,cn,dn,en,fn,gn,hn))
 
 
 u = C.ir*ur+C.iθ*uθ+C.iz*uz
-
-plot(R1(r, 0.01, 1), (r, 0.0, 1000.0))
