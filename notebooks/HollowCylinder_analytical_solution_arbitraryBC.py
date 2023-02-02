@@ -33,8 +33,8 @@ ur = Function("ur")(C.r, C.θ, C.z)
 uθ = Function("uθ")(C.r, C.θ, C.z)
 uz = Function("uz")(C.r, C.θ, C.z)
 
-N = 12  # number of circumferential modes
-M = 10  # number of longitudinal modes
+N = 4  # number of circumferential modes
+M = 2  # number of longitudinal modes
 
 # general symbols and variables
 (π, ν, ω, σ, γ) = sp.symbols('π ν ω σ γ', positive=True)
@@ -52,6 +52,7 @@ D = E*h**3/12.0/(1.0-σ**2) # flexural stiffness
 # Boundary conditions stiffnesses
 (k1, k2, k3, k4, k5, k6, k7, k8) = sp.symbols('k1 k2 k3 k4 k5 k6 k7 k8')
 
+k7 = 0
 # α and β vectors
 α1 = x*(x/L-1)**2
 α2 = (x**2/L)*(x/L-1.0)
