@@ -87,11 +87,9 @@ vfq = [np.linspace(0.0,
                    endpoint=True) 
        for n in nfq]
 
-def dask_fft(ths):
-    return dfft.rfftn(ths, [next_power_of_2(ths.shape[0]), ])
-
-
-FSS = ar.map_blocks(dask_fft,
+FSS = ar.map_blocks(lambda ths: np.fft.rfft(ths, 
+                                            n=next_power_of_2(ths.shape[0]), 
+                                            axis=0),
                     enforce_ndim=True,
                     dtype=np.complex128, 
                     chunks=(tuple([next_power_of_2(ths.shape[0])//2+1 for ths in ar.blocks]), 
@@ -101,16 +99,20 @@ FSS = ar.map_blocks(dask_fft,
                                   dtype=np.complex128),
                     )
 
-TFS = FSS.map_blocks(lambda fss: fko(da.absolute(fss[1:, :2].T/fss[1:, 2].T),
-                                     np.linspace(0.0,
-                                                 0.5/dtm,
-                                                 fss.shape[0]//2+1,
-                                                 endpoint=True
-                                                 )[1:],
-                                     smooth_coeff=40
-                                     ).T,
+TFS = FSS.map_blocks(lambda fss: np.stack([fko(np.abs(FSS.blocks[0][1:, 0].T/
+                                                      FSS.blocks[0][1:, 2].T), 
+                                               np.linspace(0.0, 0.5/dtm, 
+                                                           FSS.blocks[0].shape[0], 
+                                                           endpoint=True)[1:], 
+                                               smooth_coeff=40), 
+                                           fko(np.abs(FSS.blocks[0][1:, 1].T/
+                                                      FSS.blocks[0][1:, 2].T), 
+                                               np.linspace(0.0, 0.5/dtm, 
+                                                           FSS.blocks[0].shape[0], 
+                                                           endpoint=True)[1:], 
+                                               smooth_coeff=40)]).T,
                      dtype=np.float64,
-                     chunks=(tuple([fss.shape[0]//2 for fss in FSS.blocks]),
+                     chunks=(tuple([fs.shape[0]-1 for fs in FSS.blocks]),
                              (2,)
                              ),
                      meta=np.array((),
@@ -118,16 +120,10 @@ TFS = FSS.map_blocks(lambda fss: fko(da.absolute(fss[1:, :2].T/fss[1:, 2].T),
                      )
 
 pdb.set_trace()
-    #    fko.fast_konno_ohmachi(
-    #                           vfq[i][1:], smooth_coeff=40)
-    #    for i,
-    #   ]
-
-pdb.set_trace()
 
 
-plt.loglog(vfq[0], np.abs(FSS[0][:, 0]/FSS[0][:, 2]), color='black')
-plt.loglog(vfq[0][1:], smoothed, color='orange')
+plt.loglog(vfq[0], np.abs(FSS.blocks[0][:, 0]/FSS.blocks[0][:, 2]), color='black')
+plt.loglog(vfq[0][1:], TFS.blocks[0][:, 0], color='orange')
 plt.show()
 pdb.set_trace()
 for i,f in enumerate(vfq):
