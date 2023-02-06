@@ -13,7 +13,7 @@ from dask.distributed import Client
 from matplotlib import pyplot as plt
 import pdb
 import numpy as np
-from scipy.signal import detrend
+from scipy.signal import detrend, find_peaks
 from scipy.integrate import cumulative_trapezoid
 
 u"""General informations"""
@@ -84,49 +84,89 @@ nfq = np.stack([next_power_of_2(b.size)
 vfq = [np.linspace(0.0,
                    0.5/dtm,
                    n//2+1,
-                   endpoint=True) 
+                   endpoint=True)
        for n in nfq]
 
-FSS = ar.map_blocks(lambda ths: np.fft.rfft(ths, 
-                                            n=next_power_of_2(ths.shape[0]), 
-                                            axis=0),
+FSA = ar.map_blocks(lambda ths: np.hstack([np.linspace(0.0,
+                                                      0.5/dtm,
+                                                      next_power_of_2(
+                                                          ths.shape[0])//2+1,
+                                                       endpoint=True).reshape(-1, 1),
+                                           np.fft.rfft(ths,
+                                                       n=next_power_of_2(ths.shape[0]),
+                                                       axis=0)]),
                     enforce_ndim=True,
                     dtype=np.complex128, 
                     chunks=(tuple([next_power_of_2(ths.shape[0])//2+1 for ths in ar.blocks]), 
-                            (3,)
+                            (4,)
                             ),
                     meta=np.array((),
                                   dtype=np.complex128),
                     )
 
-TFS = FSS.map_blocks(lambda fss: np.stack([fko(np.abs(FSS.blocks[0][1:, 0].T/
-                                                      FSS.blocks[0][1:, 2].T), 
-                                               np.linspace(0.0, 0.5/dtm, 
-                                                           FSS.blocks[0].shape[0], 
+TFS = FSA.map_blocks(lambda fsa: np.hstack([fsa[:,0],
+                                            fko(np.abs(fsa[1:, 1].T/fsa[1:, 3].T),
+                                                np.linspace(0.0, 0.5/dtm, 
+                                                            fsa[:, 0].size,
+                                                            endpoint=True)[1:],
+                                                smooth_coeff=40), 
+                                            fko(np.abs(fsa[1:, 2].T/fsa[1:, 3].T), 
+                                                np.linspace(0.0, 0.5/dtm, 
+                                                           fsa[:,0].size, 
                                                            endpoint=True)[1:], 
-                                               smooth_coeff=40), 
-                                           fko(np.abs(FSS.blocks[0][1:, 1].T/
-                                                      FSS.blocks[0][1:, 2].T), 
-                                               np.linspace(0.0, 0.5/dtm, 
-                                                           FSS.blocks[0].shape[0], 
-                                                           endpoint=True)[1:], 
-                                               smooth_coeff=40)]).T,
+                                                smooth_coeff=40)]),
                      dtype=np.float64,
-                     chunks=(tuple([fs.shape[0]-1 for fs in FSS.blocks]),
-                             (2,)
+                     enforce_ndim=True,
+                     chunks=(tuple([fs.shape[0]-1 for fs in FSA.blocks]),
+                             (3,)
                              ),
                      meta=np.array((),
                                    dtype=np.float64),
                      )
 
-pdb.set_trace()
+def get_TFS_peaks(tfs):
+    min_prominence = 1000
+    p_r, pd_r = find_peaks(
+        tfs[:, 1], prominence=(None, 
+                         min_prominence), 
+        distance=100)
+    p_t, pd_t = find_peaks(
+        tfs[:, 2], prominence=(None,
+                               min_prominence),
+        distance=100)
+    pm_r = np.zeros((10,), 
+                    dtype=np.int64)
+    pm_t = np.zeros((10,), 
+                    dtype=np.int64)
+    pm_r[:pd_r['prominences'].size] = p_r[np.argsort(pd_r['prominences'])]
+    pm_t[:pd_t['prominences'].size] = p_t[np.argsort(pd_t['prominences'])]
+    return np.array([pm_r, pm_t]).T
 
 
-plt.loglog(vfq[0], np.abs(FSS.blocks[0][:, 0]/FSS.blocks[0][:, 2]), color='black')
-plt.loglog(vfq[0][1:], TFS.blocks[0][:, 0], color='orange')
-plt.show()
-pdb.set_trace()
-for i,f in enumerate(vfq):
-    plt.semilogx(f, np.abs(FSS[i][:, 0]/FSS[i][:, 1]), color='black')
+pks = TFS.map_blocks(get_TFS_peaks,
+                     dtype=np.float64,
+                     enforce_ndim=True,
+                     chunks=(tuple([10 for fs in TFS.blocks]),
+                             (2,)
+                             ),
+                     meta=np.array((),
+                                   dtype=np.float64),
+                    )
 
 pdb.set_trace()
+
+# plt.loglog(vfq[0], 
+#            np.abs(FSA.blocks[0][:, 0]/FSA.blocks[0][:, 2]), 
+#            color='black', 
+#            label=r"$\vert\frac{\hat{u}_r}{\hat{T}} \vert$")
+# plt.loglog(vfq[0][1:]+vfq[0][1], 
+#            TFS.blocks[0][:, 0], 
+#            color='red',
+#            label=r"\mathcal{S}\left($\vert\frac{\hat{u}_r}{\hat{T}} \vert\right)$")
+
+# for i,v in enumerate(pks.blocks[0].compute()):
+#     plt.axvline(x=(vfq[0][1]+vfq[0][v+1])[0])
+    
+# plt.xlabel(r"$f$ [Hz]")
+# plt.ylabel(r"$\vert H(f)\vert$ [1]")
+# plt.show()
