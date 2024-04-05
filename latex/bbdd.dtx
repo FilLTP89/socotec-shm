@@ -1,0 +1,434 @@
+%\iffalse
+% ====================================================================
+%  @LaTeX-documentation-file{
+%     author          = "David Dureisseix",
+%     version         = "2.03",
+%     date            = "13 / 02 / 01",
+%     time            = "14:25:24 MET",
+%     filename        = "bbdd.dtx",
+%     address         = "L.M.T. STRUCTURES et SYSTEMES
+%                        61 Av. du Pdt Wilson
+%                        F-94235 CACHAN CEDEX
+%                        FRANCE",
+%     telephone       = "+33 1 47 40 53 86",
+%     FAX             = "+33 1 47 40 27 85",
+%     email           = "dureisse@lmt.ens-cachan.fr",
+%     codetable       = "ISO/ASCII",
+%     keywords        = "LaTeX math fonts",
+%     supported       = "no",
+%     abstract        = "This is the documentation and
+%                        self-extracting archive for the bbdd
+%                        package.  If you run latex2e on it, it will
+%                        produce the documentation, as well as
+%                        the bbdd package and font definition
+%                        file.",
+%     package         = "stands alone",
+%     dependencies    = "none",
+%  }
+% ====================================================================
+%\fi
+%% \CheckSum{772}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+%
+% \setcounter{StandardModuleDepth}{1}
+% \def\dst{\expandafter{\normalfont\scshape docstrip}}
+%
+% \changes{2.03}{2001/02/13}{File created}
+%
+% \title{Du Blackboard Bold Grec : la police bbdd}
+% \author{David Dureisseix}
+% 
+%
+% \maketitle
+% 
+% \section*{Introduction}
+%
+%	Le but du package |bbdd| est de fournir une partie des
+% fontes en blackboard bold (caract\`eres d\'etour\'es), en particulier
+% pour une partie des lettres grecques.
+%	Par manque de temps pour les tester extensivement, toutes les
+% lettres ne sont pas pr\'esentes et cette distribution est {\sc sgdg}.
+%
+%	Ce package requi\`ere aussi le package |amsfonts| et doit \^etre
+% trait\'e par \LaTeXe{} et non plus par l'ancienne version 2.09.
+%
+% \section*{Utilisation}
+%
+%	Sans entrer dans le d\'etail , les commandes classiques sont
+% |\mathbbdd| pour acc\'eder aux caract\`eres,
+% |\textbbdd| pour du texte et
+% |\bbddfamily| pour un texte long (ces commandes n'ont pas
+% encore \'et\'e test\'ees \`a ce jour...).
+%
+%	Pour charger le package, utiliser la d\'eclaration
+% |\usepakage{bbdd}|
+% dans le pr\'eambule de votre document. Une option ``poor'' est
+% pr\'evue pour simuler l'effet du package avec les polices existantes
+% (superposition de caract\`eres...)~; dans ce cas, d\'eclarer
+% |\usepakage[poor]{bbdd}|.
+% Pour utiliser unev version ``bold'', d\'eclarer
+% |\usepakage[bold]{bbdd}|.
+%
+%	Les principaux caract\`eres sont accessibles via une commande
+% particuli\`ere. Actuellement, les commandes implant\'ees sont~: \\
+% |$\Epsilon$| pour $\Epsilon$ \\
+% |$\dEpsil$| pour $\dEpsil$ \\
+% |$\Chi$| pour $\Chi$ \\
+% |$\dChi$| pour $\dChi$ \\
+% |$\Alpha$| pour $\Alpha$ \\
+% |$\dAlpha$| pour $\dAlpha$ \\
+% |$\Beta$| pour $\Beta$ \\
+% |$\dBeta$| pour $\dBeta$ \\
+% |$\dKrm$| pour $\dKrm$ \\
+% |$\dArm$| pour $\dArm$ \\
+% |$\dGrm$| pour $\dGrm$ \\
+% |$\dsigma$| pour $\dsigma$ \\
+% |$\dSigma$| pour $\dSigma$ \\
+% |$\depsil$| pour $\depsil$ \\
+% |$\dpi$| pour $\dpi$ \\
+% |$\dkrm$| pour $\dkrm$ \\
+% |$\darm$| pour $\darm$ \\
+% |$\dchi$| pour $\dchi$ \\
+% |$\dalpha$| pour $\dalpha$ \\
+% |$\dbeta$| pour $\dbeta$ \\
+% |$\dgrm$| pour $\dgrm$ \\
+% |$\dOmega$| pour $\dOmega$ \\
+% |$\dlambda$| pour $\dlambda$ \\
+% |$\dLambda$| pour $\dLambda$ \\
+%
+% 	L'allure de l'ensemble de la police nouvellement cr\'ee 
+% est la suivante~:
+% \begin{center}
+%    \bbddfamily
+%    \fonttable
+% \end{center}
+%
+% \StopEventually{}
+%
+%	\section{rendons \`a {C}\'esar...}
+% This package is copyright \copyright~1996 David Dureisseix.
+% All rights are reserved.
+% The moral right of the author has been asserted.
+%
+% You are {\em not allowed\/} to take money for the distribution or use of
+% this file except for a nominal charge for copying, etc.
+% 
+% Redistribution of unchanged files is allowed provided that the whole
+% package is distributed.
+%
+% \StopEventually{}
+%
+% To begin with, the |bbdd| package is
+% installed by running \LaTeXe{} on this document, so we begin with
+% the installation procedure.  This needs to use \LaTeXe and amsfonts:
+%    \begin{macrocode}
+%<*install>
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{amsfonts}
+%    \end{macrocode}
+% First of all, we write out a little |.ins| file which creates the
+% |bbdd| package:
+%    \begin{macrocode}
+\begin{filecontents}{bbdd.ins}
+   \generateFile{bbdd.sty}{f}{
+      \from{bbdd.dtx}{package}}
+   \generateFile{fonttabl.sty}{f}{
+      \from{bbdd.dtx}{fonttabl}}
+   \generateFile{Ubbdd.fd}{f}{
+      \from{bbdd.dtx}{fontdef}}
+\end{filecontents}
+%    \end{macrocode}
+% Then we do some horrible low-level hacks to run docstrip on
+% |bbdd.ins|: 
+%    \begin{macrocode}
+\bgroup
+   \makeatletter
+   \let\@@end=\relax
+   \def\batchfile{bbdd.ins}
+   \input{docstrip}
+\egroup
+%    \end{macrocode}
+% That's it for the installation:
+%    \begin{macrocode}
+%</install>
+%    \end{macrocode}
+%
+% \section{Documentation}
+%
+% We now provide the documentation driver for this document:
+%    \begin{macrocode}
+%<*driver>
+\documentclass{ltxdoc}
+\DisableCrossrefs
+\OnlyDescription 
+\usepackage{bbdd,fonttabl}
+%    \end{macrocode}
+% Then we produce the documentation:
+%    \begin{macrocode}
+\begin{document}
+   \DocInput{bbdd.dtx}
+\end{document}
+%</driver>
+%    \end{macrocode}
+%
+% \section{The package}
+%
+% We can now implement the |bbdd| package.
+%    \begin{macrocode}
+%<*package>
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+\ProvidesPackage{bbdd}[2000/08/16 Bbdd symbol package]
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+%     DUREISSEIX David    L.M.T. STRUCTURES et SYSTEMES
+%
+%     a partir de `amsfonts.sty'
+% ======================================================================
+%
+% Identification
+% """"""""""""""
+\message{Caracteres speciaux Blackboard grecs - SGDG}
+\NeedsTeXFormat{LaTeX2e}
+%
+% Package loading
+% """""""""""""""
+\RequirePackage{amsfonts}
+\let\@ddfonts=T
+%
+% Options
+% """""""
+\newif \ifbold
+\boldfalse
+\newif \ifpoor
+\poorfalse
+\DeclareOption{bold}{\boldtrue\typeout{version bold... use package bm}}
+\DeclareOption{poor}{\poortrue\typeout{version pauvre... a ameliorer}}
+\ProcessOptions
+%
+\ifpoor
+%
+% On pallie un manque
+% """""""""""""""""""
+  \def\Epsilon{{\mathrm{E}}}
+  \def\dEpsil{{\mathbb{E}}}
+  \def\Chi{{\mathrm{X}}}
+  \def\dChi{{\mathbb{X}}}
+  \def\Alpha{{\mathrm{A}}}
+  \def\dAlpha{{\mathbb{A}}}
+  \def\Beta{{\mathrm{B}}}
+  \def\dBeta{{\mathbb{B}}}
+  \def\dKrm{{\mathbb{K}}}
+  \def\dArm{{\mathbb{A}}}
+  \def\dGrm{{\mathbb{G}}}
+%
+% Version pauvre a ameliorer...
+% """"""""""""""
+  \def\dsigma{\sigma\kern-.5em{\sigma}}
+  \def\dSigma{\Sigma\kern-.55em{\Sigma}}
+  \def\depsil{\varepsilon\kern-.40em{\varepsilon}}
+  \def\dpi   {\pi\kern-.55em{\pi}}
+  \def\dkrm  {{\rm k}\kern-.5em{\rm k}}
+  \def\darm  {{\rm a}\kern-.40em{\rm a}}
+  \def\dchi  {\chi\kern-.55em{\chi}}
+  \def\dalpha{\alpha\kern-.55em{\alpha}}
+  \def\dbeta {\beta\kern-.55em{\beta}}
+  \def\dgrm  {{\rm g}\kern-.40em{\rm g}}
+  \def\dOmega  {\Omega\kern-.6em{\Omega}}
+  \def\dlambda {\lambda\kern-.50em{\lambda}}
+  \def\dLambda {\Lambda\kern-.55em{\Lambda}}
+%
+\else
+  \ifbold
+    \RequirePackage{bm}
+%
+% On pallie un manque
+% """""""""""""""""""
+    \def\Epsilon{{\mathrm{E}}}
+    \def\dEpsil{\bm{\mathrm{E}}}
+    \def\Chi{{\mathrm{X}}}
+    \def\dChi{\bm{\mathrm{X}}}
+    \def\Alpha{{\mathrm{A}}}
+    \def\dAlpha{\bm{\mathrm{A}}}
+    \def\Beta{{\mathrm{B}}}
+    \def\dBeta{\bm{\mathrm{B}}}
+    \def\dKrm{\bm{\mathrm{K}}}
+    \def\dArm{\bm{\mathrm{A}}}
+    \def\dGrm{\bm{\mathrm{G}}}
+%
+% Version bold package bm
+% """"""""""""
+    \def\dsigma{\bm{\sigma}}
+    \def\dSigma{\bm{\Sigma}}
+    \def\depsil{\bm{\varepsilon}}
+    \def\dpi   {\bm{\pi}}
+    \def\dkrm  {\bm{\mathrm{k}}}
+    \def\darm  {\bm{\mathrm{a}}}
+    \def\dchi  {\bm{\chi}}
+    \def\dalpha{\bm{\alpha}}
+    \def\dbeta {\bm{\beta}}
+    \def\dgrm  {\bm{\mathrm{g}}}
+    \def\dOmega  {\bm{\Omega}}
+    \def\dlambda {\bm{\lambda}}
+    \def\dLambda {\bm{\Lambda}}
+  \else
+%
+%    \end{macrocode}
+% \begin{macro}{\mathbbdd}
+% \begin{macro}{\textbbdd}
+% \begin{macro}{\bbddfamily}
+%    These are the three user commands.  They are just simple calls to
+%    \LaTeXe{} font selection.
+%    \begin{macrocode}
+%
+% On pallie un manque
+% """""""""""""""""""
+  \def\Epsilon{{\mathrm{E}}}
+  \def\dEpsil{{\mathbb{E}}}
+  \def\Chi{{\mathrm{X}}}
+  \def\dChi{{\mathbb{X}}}
+  \def\Alpha{{\mathrm{A}}}
+  \def\dAlpha{{\mathbb{A}}}
+  \def\Beta{{\mathrm{B}}}
+  \def\dBeta{{\mathbb{B}}}
+  \def\dKrm{{\mathbb{K}}}
+  \def\dArm{{\mathbb{A}}}
+  \def\dGrm{{\mathbb{G}}}
+%
+  \newcommand{\bbddfamily}{\fontencoding{U}\fontfamily{bbdd}\selectfont}
+  \newcommand{\textbbdd}[1]{{\bbddfamily#1}}
+  \DeclareMathAlphabet{\mathbbdd}{U}{bbdd}{m}{n}
+%
+% La fameuse police
+% """""""""""""""""
+  \DeclareSymbolFont{DDb}{U}{bbdd}{m}{n}
+%
+% Les fameux caracteres
+% """""""""""""""""""""
+  \begingroup
+    \DeclareMathSymbol{\dsigma} {\mathord}{DDb}{27}
+    \DeclareMathSymbol{\dSigma} {\mathord}{DDb}{6}
+    \DeclareMathSymbol{\depsil} {\mathord}{DDb}{34}
+    \DeclareMathSymbol{\dpi}    {\mathord}{DDb}{25}
+    \DeclareMathSymbol{\dkrm}   {\mathord}{DDb}{107}
+    \DeclareMathSymbol{\darm}   {\mathord}{DDb}{97}
+    \DeclareMathSymbol{\dchi}   {\mathord}{DDb}{31}
+    \DeclareMathSymbol{\dalpha} {\mathord}{DDb}{11}
+    \DeclareMathSymbol{\dbeta}  {\mathord}{DDb}{12}
+    \DeclareMathSymbol{\dgrm}   {\mathord}{DDb}{103}
+    \DeclareMathSymbol{\dOmega} {\mathord}{DDb}{10}
+    \DeclareMathSymbol{\dlambda} {\mathord}{DDb}{21}
+    \DeclareMathSymbol{\dLambda} {\mathord}{DDb}{3}
+  \endgroup
+%
+% Le nom d'acces dans LaTeX2e
+% """""""""""""""""""""""""""
+  \DeclareSymbolFontAlphabet{\mathbbdd}{DDb}
+%
+  \fi
+\fi
+%
+%</package>
+%    \end{macrocode}
+% \end{macro}
+% \end{macro}
+% \end{macro}
+%
+% \section{The font definitions}
+%
+% The font definitions for the \textrm{bbdd} fonts are:
+%    \begin{macrocode}
+%<*fontdef>
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+\ProvidesFile{Ubbdd.fd}[1996/10/15 v2 DD font definitions]
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+%     DUREISSEIX David    L.M.T. STRUCTURES et CMAO
+%
+% Font definition (.fd) file `Ubbdd.fd' d'apres Umsb.fd
+%   encoding : U (Unknown)
+%   family   : bbdd
+% =====================================================================
+\DeclareFontFamily{U}{bbdd}{}
+\DeclareFontShape{U}{bbdd}{m}{n}
+   {  <5> <6> <7> <8> <9> gen * bbdd
+	<10> <10.95> <12> <14.4> <17.28> <20.74> <24.88> bbdd10
+   }{}
+%</fontdef>
+%    \end{macrocode}
+%
+% \section{A font table package}
+%
+%    \begin{macrocode}
+%<*fonttabl>
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+% fonttabl.sty
+% [][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][][]
+%     DUREISSEIX David    L.M.T. STRUCTURES et CMAO
+%
+%	a partir de testfont.tex
+% ======================================================================
+\newcount\m \newcount\n \newcount\p \newdimen\dim
+\chardef\other=12
+\def\oct#1{\hbox{\rm\'{}\kern-.2em\it#1\/\kern.05em}} % octal constant
+\def\hex#1{\hbox{\rm\H{}\tt#1}} % hexadecimal constant
+\def\setdigs#1"#2{\gdef\h{#2}% \h=hex prefix; \0\1=corresponding octal
+ \m=\n \divide\m by 64 \xdef\0{\the\m}%
+ \multiply\m by-64 \advance\m by\n \divide\m by 8 \xdef\1{\the\m}}
+\def\testrow{\setbox0=\hbox{\penalty 1\def\\{\char"\h}%
+ \\0\\1\\2\\3\\4\\5\\6\\7\\8\\9\\A\\B\\C\\D\\E\\F%
+ \global\p=\lastpenalty}} % \p=1 if none of the characters exist
+\def\oddline{\cr
+  \noalign{\nointerlineskip}
+  \multispan{19}\hrulefill&
+  \setbox0=\hbox{\lower 2.3pt\hbox{\hex{\h x}}}\smash{\box0}\cr
+  \noalign{\nointerlineskip}}
+\newif\ifskipping
+\def\evenline{\loop\skippingfalse
+ \ifnum\n<256 \m=\n \divide\m 16 \chardef\next=\m
+ \expandafter\setdigs\meaning\next \testrow
+ \ifnum\p=1 \skippingtrue \fi\fi
+ \ifskipping \global\advance\n 16 \repeat
+ \ifnum\n=256 \let\next=\endchart\else\let\next=\morechart\fi
+ \next}
+\def\morechart{\cr\noalign{\hrule\penalty5000}
+ \chartline \oddline \m=\1 \advance\m 1 \xdef\1{\the\m}
+ \chartline \evenline}
+\def\chartline{&\oct{\0\1x}&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&\:&&}
+\def\chartstrut{\lower4.5pt\vbox to14pt{}}
+\def\fonttable{$$
+  \@namedef{T@OT1}{}% Switch off loading of ot1.def
+  \@namedef{T@T1}{}%  and t1.def in the table axes
+  \global\n=0
+  \halign to\hsize\bgroup
+    \chartstrut##\tabskip0pt plus10pt&
+    &\hfil##\hfil&\vrule##\cr
+    \lower6.5pt\null
+    &&&\oct0&&\oct1&&\oct2&&\oct3&&\oct4&&\oct5&&\oct6&&\oct7&\evenline}
+\def\endchart{\cr\noalign{\hrule}
+  \raise11.5pt\null&&&\hex 8&&\hex 9&&\hex A&&\hex B&
+  &\hex C&&\hex D&&\hex E&&\hex F&\cr\egroup$$\par}
+\def\:{\setbox0=\hbox{\char\n}%
+  \ifdim\ht0>7.5pt\reposition
+  \else\ifdim\dp0>2.5pt\reposition\fi\fi
+  \box0\global\advance\n 1 }
+\def\reposition{\setbox0=\vbox{\kern2pt\box0}\dim=\dp0
+  \advance\dim 2pt \dp0=\dim}
+\def\centerlargechars{
+  \def\reposition{\setbox0=\hbox{$\vcenter{\kern2pt\box0\kern2pt}$}}}
+%</fonttabl>
+%    \end{macrocode}
+%
+% \Finale
+\endinput

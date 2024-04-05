@@ -1,0 +1,299 @@
+% This is samplepaper.tex, a sample chapter demonstrating the
+% LLNCS macro package for Springer Computer Science proceedings;
+% Version 2.20 of 2017/10/04
+%
+\documentclass[runningheads]{llncs}
+%
+% \usepackage{graphicx}
+% \usepackage[dvipsnames]{xcolor}
+\input{commands}
+% Used for displaying a sample figure. If possible, figure files should
+% be included in EPS format.
+%
+% If you use the hyperref package, please uncomment the following line
+% to display URLs in blue roman font according to Springer's eBook style:
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
+
+\begin{document}
+%
+\title{Data-driven surrogate model 	of an instrumented slender structure for reliability analysis\thanks{SOCOTEC Monitoring}}
+%
+%\titlerunning{Abbreviated paper title}
+% If the paper title is too long for the running head, you can set
+% an abbreviated paper title here
+%
+\author{Filippo Gatti\inst{1}\orcidID{0000-0001-7174-4048} \and
+Luca Rosafalco\inst{2}\orcidID{0000-0003-0399-4699} \and
+Raphaël Leclercq\inst{3} \and Gauthier Magnaval\inst{3}\and Carl Kfoury\inst{1} \and François Pinard\inst{1} \and Timothée Zerr\inst{1}}
+%
+\authorrunning{F. Gatti et al.}
+% First names are abbreviated in the running head.
+% If there are more than two authors, 'et al.' is used.
+%
+\institute{Université Paris-Saclay, CentraleSupélec, CNRS, ENS Paris-Saclay, \\ Laboratoire de Mécanique de Paris Saclay UMR 9026, \\8-10 rue Joliot Curie, 91190 Gif sur Yvette, France\\
+\email{filippo.gatti@centralesupelec.fr}\\
+\url{https://lmps.ens-paris-saclay.fr} \and
+Dipartimento di Ingegneria Civile ed Ambientale, \\Politecnico di Milano, \\Piazza L. da Vinci 32, 20133 Milano, Italy \\
+\email{luca.rosafalco@polimi.it} \\
+\url{https://www.dica.polimi.it}
+\and
+SOCOTEC Monitoring, 9 rue Léon Blum, 91120 Palaiseau, France\\
+\email{\{Name.SURNAME\}@socotec.com}\\
+\url{https://www.socotec.com}
+}
+%
+\maketitle              % typeset the header of the contribution
+%
+\begin{abstract}
+In this study, the structural health monitoring of a gas chimney for refinery purposes is performed. The cylindrical chimney is made up of an inner masonry layer and an external reinforced concrete coating. Visual inspections and non-destructive tests showed damages, including cracks and chemical attacks of the masonry inner core. The structure was instrumented with two one-directional accelerometers located on top, measuring radial and tangential accelerations. The main vibrational modes were \textcolor{red}{first} estimated with Fast Fourier Transform and peak detection algorithm. \textcolor{red}{The modal response of the chimney was reconstructed via the Multiresolution Dynamic Modal Decomposition in order to obtain a more robust estimation against ambient and observation noise.}
+To better characterize the vibrational behavior of the aging structure and to predict its response under thermal and wind loads, an additional numerical model of the chimney was deemed necessary.
+In this work, we describe the construction and the calibration of the chimney’s digital twin. A data-driven meta-model is trained to predict the modal behavior of the structure under environmental and operational variations highlighting the possible onset and propagation of damage patterns. The advantages of the meta-model are presented and compared with the finite element model simulating the structural response of the digital twin. Finally, using Monte Carlo simulations, probabilities of failure of the gas chimney at different wind loads are computed.
+
+\keywords{slender structure \and reliability analysis \and digital twin \and surrogate model \and vibration monitoring}
+\end{abstract}
+%
+%
+%
+\section{Introduction}
+\label{sec:Introduction}
+Severe safety concerns are raised by civil engineering structures as they overpass their nominal life. Nonetheless, replacing those ageing structure is not straightforward: a careful and precise study of economic and ecologic aspects should be carried out. However, vibrational analysis is one of the most adopted techniques to assess the actual health of a structure. Vibrational monitoring is rather effective for a broad-band characterization of the free-oscillation dynamics of a structure and it allows to infer critical aspects of the global structural health, not visible when inspecting \textcolor{red}{Raphaël: need for references}. In particular, in this paper, we assess the health of a gas chimney in the refinery of Donges, in Western France. \textcolor{red}{The refinery is owned by the oil and gas company TotalEnergies - Can we avoid any mention of Total ?}. More than ten years ago, an explosion occurred nearby the chimney, which engendered its structural safety and induced extensive cracking and local damage at the structure. In the event of a collapse of various lining blocks, the effects would be structural damage to the lower blocks and blockage of the duct. %In addition, the collapse would reduce the mass of the chimney and increase vibration motion.
+The present study is meant to support TotalEnergies' decision process regarding the dismantling and the replacement of the infrastructure. The choice is delicate, since a premature desmantling could have a large environmental and economic impacts. Thanks to the analysis of vibrational data acquired by SOCOTEC Monitoring, the actual modal response of the chimney is characterized and numerically reproduced. A sensitivity analysis is thereafter conducted, to assess the most influential parameters on the structural response and so to construct a meaningful surrogate model.
+
+\subsection{The gas chimney at the Donges refinery}
+\label{subsec:Donges_chimney}
+The chimney at Donges was built in 1970 by TotalEnergies and reaches $H$=85.5 m height, with an external radius is $R_e$=2.77 m (see \Cref{sfig:donges_chimney}). 
+\begin{figure}
+    \centering
+    \subfloat[]{\includegraphics[height=40mm]{donges_chimney.eps}\label{sfig:donges_chimney}}
+    \subfloat[]{\includegraphics[height=40mm]{donges_chimney_fractures.eps}\label{sfig:donges_chimney_fractures}}
+    \caption{(a) Image of the Donges gas chimney. (b) Image of the fractures within the inner masonry coating of the gas chimney. Courtesy of Delta International, 2010}
+    \label{fig:donges_chimney}
+\end{figure}
+The structure essentially composes of an inner masonry hollow cylinder and an external reinforced concrete coating. Several coatings have been added to the structure but will not be considered at all in the study, for the sake of simplicity. The masonry layer thickness $e_{m}(z)$ depends on the elevation $z$: $e_m(z)=e_{m1}$ for $0\le z \le H_m$=6.57 m and $e_m(z)=e_{m2}$ for $H_m\le z\le H$. In particular, $e_{m1}$=20 cm and $e_{m2}$=10 cm. The concrete thickness $e_c(z)$ decreases linearly along the altitude, from the base to the height $H_c$=33.5 m and then it remains constant from $z=H_c$ to $z=H$, i.e.  $e_c(z)=\max($35 cm-0.004$\cdot z$,20 cm$)$ . The foundation slab is circular, with a diameter of $D_f$=11 m and a thickness of $e_f$=2 m. The foundation slab is anchored to the ground via concrete piles. \\ 
+
+\begin{figure}
+    \centering
+    \includegraphics[height=120mm]{Figures/Chimney_Section_crop.pdf}
+    \caption{Technical drawing of the chimney with cross sections.}    
+    \label{fig:tech_Chimney}
+\end{figure}
+
+According to an inspection report, drafted in 2010 following the explosion of an apparatus close to the chimney - that could have damaged it - several internal cracks in the masonry layer were detected, although they seemingly left the external concrete coating unaffected. The internal cracks are vertical, as shown in \Cref{sfig:donges_chimney_fractures}. The
+several cracks in the brick lining pose a serious collapse potential. Moreover, despite the rather good conditions, the visual inspection reported a specific area (less than 1 m$^\text{2}$) where the reinforced concrete seemingly suffered of a chemical attack. The report suggested a deeper investigation into this area to identify if the reinforcement has been weakened. \\ Following
+this inspection report, TotalEnergies retrofitted the chimney and commissioned SOCOTEC Monitoring the structural health monitoring of the chimney, to suggest a life expectancy to plan the rebuilding.
+
+
+\subsection{Plan of the paper}
+\label{subsec:plan_of_the_paper}
+\textcolor{red}{To be drafted after the paper is done.}
+
+\section{Data}
+\label{sec:Data}
+Following the incident, SOCOTEC Monitoring installed two one-dimensional (1-D) accelerometers at the very top of the chimney to monitor its dynamic structural behaviour. The accelerometers measure radial and tangential accelerations respectively, namely $\ddot{u}_r(t)$ and $\ddot{u}_\theta(t)$. The chimney was firstly instrumented in 2016 and monitored until 2017, for a few months. After a break of a few years, the two devices were reactivated in early 2020, before a new interruption. The instrumentation is now active since January 2021. The digital signals were recorded - twice a day, once at midnight and once at midday - by a data acquisition system installed at the base of the chimney, thanks to a 3G antenna. Each acquisition consists of time-histories of 15 min length, sampled at 100 Hz. This corresponds to a set of discrete acceleration time-histories of $M$ = 90000 sampling points, with a time-step $\Delta t$ = 0.01 s. \textcolor{red}{Filippo: add examples of recordings}.
+\textcolor{red}{Raphaël: can we publish the database open source? - Yes but without mentioning Total in the article}
+
+
+In the present study, for each $i^\text{th}$ acquisition, the acceleration time-histories (i.e. the data snapshots of that specific $i^\text{th}$ acquisition) are arranged into two $1\times M$ vectors $\St[r][(i)]$ (radial snapshot) and $\St[\theta][(i)]$ (tangential snapshot), that read:
+$$\St[r][(i)]=\bmat[\ddot{u}^{(i)}_r(0),\ddot{u}^{(i)}_r(\Delta t),\ldots ,\ddot{u}^{(i)}_r((M-1)\Delta t)][cccc] \quad \St[\theta][(i)]=\bmat[\ddot{u}^{(i)}_\theta(0),\ddot{u}^{(i)}_\theta(\Delta t),\ldots ,\ddot{u}^{(i)}_\theta((M-1)\Delta t)][cccc]$$
+For the sake of simplicity, each $i^{\text{th}}$ acquisition, starting at absolute time $t_i$, is referenced in time starting at local time $\tau^{(i)}=0$, where $\tau^{(i)}=t-t_i$.\\ For this purpose, the following \textit{time extraction operator} is also defined:
+\begin{equation}
+    \label{eq:time_extracion}
+    \mathcal{E}_j^k(\St[][(i)]) = \bmat[\ddot{u}^{(i)}(j\Delta t),\ddot{u}^{(i)}((j+1)\Delta t),\ldots ,\ddot{u}^{(i)}_\theta((k-1)\Delta t)][cccc]
+\end{equation}
+The \textit{time extraction operator} indistinctly applies to both $\St[r][(i)]$ and $\St[\theta][(i)]$ (which is why it is applied to a generic snapshot $\St[][(i)]$ in \Cref{eq:time_extracion}. It extracts from the $i^\text{th}$ acquisition snapshot the subset of contiguous discrete values acquired between the $j^\text{th}$ and $k^\text{th}$ time-steps (local acquisition time $\tau^{(i)}$).\\
+
+\textcolor{red}{Attention: we talk of non-linear modelling, but the model used for calibration and for sensitivity analysis is linear.}
+
+\section{Methods}
+\label{sec:methods}
+
+\textcolor{red}{We need a graph explaining how the different tools (parametric DMD + sensitivity analysis + numerical model)}
+
+\subsection{Elementary effects method}
+\textcolor{red}{check possible repetition with the content of the introduction section}
+
+Determining and monitoring elastic properties is a widespread approach for detecting damage \cite{art:Pandey94}. Dynamic identification can be carried out by comparing numerical predictions with experimental data and by modifying material parameters on the basis of their discrepancy. In this work, material parameters are collected in a vector $\boldsymbol{\eta}\in \mathbb{R}^{N_\eta}$, and FE based numerical models are employed to predict structural frequencies $\boldsymbol{\lambda}_{\text{num}}=y(\boldsymbol{\eta})$. At the early stage of a monitoring process, structural frequencies $\boldsymbol{\lambda}_{\text{exp}}$ are employed to determine a reference configuration \cite{art:Kamariotis21}. The onset and propagation of damage is monitored with respect to this configuration \cite{thesis:PhD}.
+
+It is not trivial to set how many and which parameters can be calibrated. With this goal, a sensitivity Analysis (SA) approach is adopted \cite{chp:Saltelli07_1}, levaing considerations on the observability and on the identifiability of the system \cite{art:Kalman63} for future work. Generally speaking, SA is used to quantify how the uncertainity of the model input affects the model output. Here, uncertainty is due to the dispersion of the mechanical properties of the construction materials, and to the possible onset and propagation of damage. A priori, it is just possible to define a suitable interval to which the material properties, namely the Young modulus of concrete and masonry, belong to. A posteriori, it is then possible to refine this estimate by comparing numerical outputs and measurements. However, some inputs affect only a little the model output. As it would be impossible to provide a menaningful estimate of these inputs, SA is exploited to exclude these parameters from the identification \cite{chp:Saltelli07_1}.
+
+The elementary effects method \cite{art:Morris91} is here employed. It consists in computing two indices $\mu_i$ and $\sigma^2_i$ for each model input $\eta_i$, with $i=1,\ldots,N_{\eta}$: $\mu_i$ specifies if the effect of $\eta_i$ is linear and additive; $\sigma^2_i$ if the effect of $\eta_i$ is non--linear or involve in interactions with other inputs. The indices $\mu_i$ and $\sigma^2_i$ are good proxy for Sobol' indices \cite{art:Sobol01} but require smaller computational resources, a crucial aspect managing quite expensive FE codes. 
+%If a greater number of degrees of freedom (dofs) were employed, a version of the elementary effect method based on more effective screening design would be recommendable \cite{art:Campolongo07}.
+
+To compute $\mu_i$ and $\sigma^2_i$, a number of incremental ratios $EE_i$ termed Elementary Effects (EE) are computed for each $\mu_i$ as follows:
+\begin{equation}
+    EE_i = \frac{y(\eta_1,\ldots,\eta_i+\Delta,\ldots,\eta_{N_{\eta}})-y(\eta_1,\ldots,\eta_{N_{\eta}})}{\Delta},
+\end{equation}
+where: $\Delta$ is a value in $\lbrace 1/(p-1), \ldots, 1-1/(p-1) \rbrace$; $p$ is the number of levels in which the $N_{\eta}$--dimensional unit cube, describing the sample space of $\boldsymbol{\eta}$, is divided.
+
+The sensitivity indices coincide with the basic statistics of the distribution to which $EE_i$ belong. This implies that:
+\begin{subequations}
+\begin{gather}
+    \mu_i = \frac{1}{N_r}\sum^{N_r}_{n_r=1} EE^{n_r}_i \\
+    \sigma^2_i = \frac{1}{N_r-1}\sum^{N_r}_{n_r=1} (EE^{n_r}_i - \mu )^2,
+\end{gather}
+\end{subequations}
+where $N_r$ is the number of sampled $EE_i$ or, in other words, the number of trajectories. Adopting the sampling strategy proposed in \cite{art:Morris91}, the total number of samples of the input space is equal to $N_r(N_{\eta}+1)$.
+
+\begin{figure}
+    \centering
+    \subfloat[]{\includegraphics[height=60mm]{Figures/meshImageAbaqusModelChimney.PNG}\label{fig:meshChimney}}
+    \subfloat[]{\includegraphics[height=40mm]{Figures/meshImageAbaqusModelChimney_detail.PNG}\label{fig:meshChimneyDetail}}
+    \caption{Mesh employed by the finite element model of the chimney (on the right: detail).}    
+    \label{fig:mesh_Chimney}
+\end{figure}
+
+\subsection{Dynamic system modelling}
+\label{sec:dynSystemModelling}
+In this study, the oscillating gas chimney is represented by the following non-linear dynamic system:
+\begin{equation}
+    \matd[\Vv]=\fv\pdp{\Vv(t)}
+    \label{eq:nonlinear_dynamics}
+\end{equation}
+with $\Vv(t)\in \mathcal{M}$ (the so called \textit{phase space}) being the vector of particle velocities at some spatial locations $\xv[j]$, such as the node positions of a Finite Element mesh of the chimney or the sensors' locations. In general, the vector $\Vv(t)$ represents the set of degrees of freedom of the chimney digital twin.\\ Intuition led to consider the chimney as a non-linear dynamic system, given the past explosion reported at the Donges refinery and the presence of visible fractures in the inner masonry coating (see \Cref{sfig:donges_chimney_fractures}). Dynamic systems are usually discretized in time, at discrete time instances $t_k \in \R$ with time index $k\in {0} \cup \N$. In this sense, the time-marching integration scheme, applied to \Cref{eq:nonlinear_dynamics} reads~\cite{brunton_chaos_2017}:
+\begin{equation}
+    \Vv(t_{k+1})=\Fv(\Vv(t_{k}))=\Vv(t_{k})+\int_{t_k}^{t_{k+1}} \fv(\Vv(s)) ds
+    \label{eq:nonlinear_dynamics_discrete}
+\end{equation}
+The non-linear functional $\Fv:\mathcal{M}\to\mathcal{M}$ defined in \Cref{eq:nonlinear_dynamics_discrete} is deterministic and defined over the probability space $(\mathcal{M},\Sigma_\mathcal{M},\mu_\mathcal{M})$. However, one can consider random dynamic systems (RDS), by explicitly including the so called \textit{process noise}~\cite{takeishi_subspace_2017}. In this case, the discrete RDS is described by:
+\begin{equation}
+    \Vv(t_{k+1})=\Fv[\xi](\Vv(t_{k}),\xiv[t])
+    \label{eq:RDS}
+\end{equation}
+with $\xiv[t]$ being the random noise defined over a probability space $(\Xi,\Sigma_\Xi,\mu_\Xi)$.\\ For the sake of clarity, in \Cref{subsec:Modal_identification_from_raw_data_with_Multiresolution_DMD}, $\Vv(t)=\bmat[\dot u_r\\ \dot u_\theta][c]$. \textcolor{red}{Define $\Vv(t)$ in other sections}
+
+\subsection{Modal identification with Fourier analysis}
+\label{subsec:Modal_identification_Fourier}
+\textcolor{red}{
+- Application of Fast Fourier Transform algorithm
+- Peak detection algorithm to infer 3 first modal frequencies (f0, f1, f2)
+- Hampel filter to filter outliers}
+
+\subsection{Modal identification from raw data with Multiresolution DMD}
+\label{subsec:Modal_identification_from_raw_data_with_Multiresolution_DMD}
+In order to identify the non-linear modal behaviour of the structure, the raw data acquisitions are analysed with the Dynamic Modal Decomposition (DMD)~\cite{Rowley_et_al_2009,Schmid_2010,Schmid_et_al_2011,Tu_et_al_2014}. The DMD is an equation-free method that exploits the data snapshots $\St$, recorded at different spatial locations on the dynamical system at stake, to extract low-dimensional spatio-temporal modes. In particular, the DMD assumes an underlying linear dynamic system with $\Fv(\Vv(t))=\Av.\Vv(t)$, where $\Vv(t)=\bmat[\dot u_r\\ \dot u_\theta][c]$. This would imply that each time snapshot belongs to a Krylov subspace, i.e., for the present study it holds that $\mathcal{E}_0^{M-2}(\St[][(i)])=\psp{\ddot{u}(0),A\ddot{u}(0),\ldots,A^{M-2}\ddot{u}(0)}$ and $\mathcal{E}_1^{M-1}(\St[][(i)])=A\mathcal{E}_0^{M-2}(\St[][(i)])$. The DMD runs a least-squares regression over the data snapshots, so to find the best-fitting $A=\underset{A\in \R}{\arg\min}\norm{\mathcal{E}_1^{M-1}(\St[][(i)])-A\mathcal{E}_0^{M-2}(\St[][(i)])}$ and compute its eigenmodes~\cite{kutz_multiresolution_2016}. In order to avoid the well numerical degeneracy of the Krylov base for large $M$, the DMD considers a rank-reduced basis obtain via Proper Orthogonal Decomposition (POD) of $\Av$, i.e. it firstly computes the Singular Value Decomposition (SVD) of $\mathcal{E}_0^{M-2}(\St[][(i)])$, namely the $r$ right and left singular vectors $\Vt[r]\in\mathbb{C}^{r\times M}$ and $\Ut[r]\in\mathbb{C}^{1\times r}$ corresponding to the largest $r$ singular values ($r=1$ in this case) according to the following expression:
+\begin{equation}
+    \mathcal{E}_0^{M-2}(\St[][(i)])=\Ut[r]\Sigmat\Vt[r][*]
+    \label{eq:svd}
+\end{equation}
+with $\Sigmat=\text{diag}(\tilde{\sigma}_i^2)$ represents the $r\times r$ diagonal matrix of singular values. Thereafter, the linear operator $\Av$ is rewritten as $\Av=\mathcal{E}_1^{M-1}(\St[][(i)])\Vt[r]\Sigmat[][-1]\Ut[r][*]$ and approximated by its $r\times r$ projection onto the POD modes $\tAv=\Ut[r][*]\Av\Ut[r]$. Once computed the right eigenvectors $\wv[k]$ of $\tAv$, associated to the eigenvalues $\lambda_k$, the low-rank approximated eigen-decomposition of $\Av$ is obtained as $\Psiv=\sum_{k}\psiv[k]\otimes\tens{\bar \psi}{k}{}=\sum_{k=1}^r\pdp{\mathcal{E}_0^{M-2}(\St[][(i)])\Vv[r]\Sigmat[][-1]\wv[k]}\otimes\tens{\bar \wv}{k}{}$. This eigen-decomposition allows to approximate the future prediction at each spatail coordinate within the snapshot $\xv[j]$ and therefore to predict the whole time-history and any future time step, according to the following expression:
+\begin{equation}
+    \vct{\tilde V}{}{}\Big\vert_{\xv[j]}(t)=\sum_{k=1}^r b_k(0) \cdot \phiv[k](\xv[j])\cdot e^{\frac{\log \lambda_k}{\Delta t}t}=\Psiv(\xv[j])\text{diag}\pdp{e^{\frac{\log \lambda_k}{\Delta t}t}}\bv
+    \label{eq:DMD_approximation}
+\end{equation}
+with $\bv$ being the vector of initial conditions, i.e., $\bv=\Psiv[][\dag]\mathcal{E}_0^{0}(\St[][(i)])$, with $\Psiv[][\dag]$ indicating the Moore–Penrose pseudoinverse~\cite{Tu_et_al_2014}. In this section, the Multiresolution DMD (mrDMD) proposed by~\cite{kutz_multiresolution_2016} is adopted, which consists into iteratively applying the standard DMD to sub-snapshots obtained by successive time-splitting of the original. In practice, at each decomposition level $\ell$, the DMD is applied to each sub-snapshot (of length $T_h$) and the slowest 
+$m^{(\ell)}$ modes are retained for the final modal sum, corresponding to the resolution level $\ell$. Thereafter, those $m^{(\ell)}$ modes are removed and the sum obtained by DMD at resolution level $\ell$ and the snapshot is time-split into two parts of length $T_{h+1}=\frac{T_{h}}{2}$ to start the next iteration.Compared to the traditional DMD algorithm, the mrDMD variant yields the following approximation:
+\begin{equation}
+    \vct{\tilde V}{}{}\Big\vert_{\xv[j]}(t)=\sum_{\ell=1}^L\sum_{h=1}^{2^{\ell-1}}\sum_{k=1}^{m^{(\ell)}} \chi^{(\ell)}_{[t_h,t_{h+1}]}(t)\cdot b_k^{(\ell,h)}(0) \cdot \phiv[k][(\ell,h)](\xv[j])\cdot e^{\frac{\log \lambda_k^{(\ell,h)}}{\Delta t}t}
+    \label{eq:DMD_approximation}
+\end{equation}
+with $\chi^{(\ell)}_{[t_h,t_{h+1}]}(t)$ being the indicator function over the time interval $\psp{t_h,t_{h+1}}$ of duration $T_h$, corresponding to each of the $2^\ell$ sub-snapshot time-ranges. For the sake of simplicity, eigenmodes with wavelength shorter than the time window $T_h$ are retained. 
+\subsection{Modal identification from raw data with subspace DMD}
+\label{subsec:Modal_identification_from_raw_data_with_subspace_DMD}
+
+
+It has been widely demonstrated (see~\cite{Rowley_et_al_2009,Schmid_2010,Mezic_2013,kutz_multiresolution_2016}) that the DMD method approximates the modes of the so-called \textit{Koopman operator}~\cite{Koopman_1931}. The Koopman operator $\mathcal{K}$ is an attractive tool to represent non-linear dynamic systems without linearization. As a matter of fact, $\mathcal{K}$ is an infinite-dimensional linear operator that applies to the space of possible observation functions $\gv:\mathcal{M}\to\mathbb{C}$ (of any quantity of interest of the system, in this case the acceleration time-histories $\ddot{u}_r$ and $\ddot{u}_\theta$, with $\gv\in\mathcal{G}\subset L^{2}(\mathcal{M},\mu_\mathcal{M})$, namely:
+\begin{equation}
+    \mathcal{K}\gv(\Vv) \overset{\Delta}{=} \gv\circ \Fv(\Vv)
+    \label{eq:Koopman_operator}
+\end{equation}
+\Cref{eq:Koopman_operator} implies that $\mathcal{K}\gv(\Vv(t_k)) = \gv\circ \Fv(\Vv(t_k))=\gv(\Vv(t_{k+1}))$. Moreover, $\mathcal{K}(\alpha\cdot \gv[\alpha]+\beta \cdot \gv[\beta])=\alpha\cdot\mathcal{K} \gv[\alpha]+\beta\cdot\mathcal{K}\gv[\beta]$. The Koopman operator trades the finite-dimensional nature of the non-linear dynamic problem with a linear yet inifinite-dimensional representation, on the space of all the measurement functions $\mathcal{G}$~\cite{brunton_chaos_2017}. In practice, the Koopman operator becomes attractive when a finite-dimensional approximation can be obtained, i.e. when a convenient finite-dimensional subspace $G\subset\mathcal{G}$ invariant to $\mathcal{K}$ is obtained. In other words, $G$ must be chosen so that $\mathcal{K}g\in G, \forall g\in \mathcal{G}$~\cite{takeishi_subspace_2017}. In practice, this task can be harder than to obtain the solution of the original system~\cite{brunton_chaos_2017}, but in such a way, the restriction of $\mathcal{K}$ to $G$, namely $K$ is finite-dimensional too. As a matter of fact, if ones suppose to have a finite set of observation functions $\Gt=\psp{\gv[1], \ldots, \gv[n]}$ with $n<\infty$, then the representation of $K$ over $\gv$ is expressed as $K\Gt$. With such finite-dimensional approximation of the Koopman operator, $G$ is spanned by the right eigenvectors $\uv[i]$ of $K$ and $\gv\in G$ can be written as a linear combination of the $n$ eigenvectors (\textit{Koopman modes} of the map $\Fv$) multiplied by the corresponding $K$'s eigenfunctions $\varphi_i(\Vv)$ (\textit{Koopman eigenfunctions}), i.e.  $\gv=\sum_i \varphi_i(\Vv)\cdot \uv[i]$~\cite{Rowley_et_al_2009}. The DMD approximates the Koopman modes and it can be therefore applied to nonlinear systems. 
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Sensitivity analysis outcomes}
+\label{sec:results_SA}
+\begin{figure}
+    \centering
+    \subfloat[]{\includegraphics[height=60mm]{Figures/DisegnoPartizione_con_sezione_crop2.pdf}\label{fig:disegnoPartizione}}
+    \subfloat[]{\includegraphics[height=40mm]{Figures/meanStandardEE_crop.pdf}\label{fig:SAoutcomes}}
+    \caption{Chimney material subdivision.}    
+    \label{fig:disegnoPartizione_SAoutcomes}
+\end{figure}
+
+
+
+ 
+% Please note that the first paragraph of a section or subsection is
+% not indented. The first paragraph that follows a table, figure,
+% equation etc. does not need an indent, either.
+
+% Subsequent paragraphs, however, are indented.
+
+% \subsubsection{Sample Heading (Third Level)} Only two levels of
+% headings should be numbered. Lower level headings remain unnumbered;
+% they are formatted as run-in headings.
+
+% \paragraph{Sample Heading (Fourth Level)}
+% The contribution should contain no more than four levels of
+% headings. Table~\ref{tab1} gives a summary of all heading levels.
+
+% \begin{table}
+% \caption{Table captions should be placed above the
+% tables.}\label{tab1}
+% \begin{tabular}{|l|l|l|}
+% \hline
+% Heading level &  Example & Font size and style\\
+% \hline
+% Title (centered) &  {\Large\bfseries Lecture Notes} & 14 point, bold\\
+% 1st-level heading &  {\large\bfseries 1 Introduction} & 12 point, bold\\
+% 2nd-level heading & {\bfseries 2.1 Printing Area} & 10 point, bold\\
+% 3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold\\
+% 4th-level heading & {\itshape Lowest Level Heading.} Text follows & 10 point, italic\\
+% \hline
+% \end{tabular}
+% \end{table}
+
+
+% \noindent Displayed equations are centered and set on a separate
+% line.
+% \begin{equation}
+% x + y = z
+% \end{equation}
+% Please try to avoid rasterized images for line-art diagrams and
+% schemas. Whenever possible, use vector graphics instead (see
+% Fig.~\ref{fig1}).
+
+% \begin{figure}
+% \includegraphics[width=\textwidth]{fig1.eps}
+% \caption{A figure caption is always placed below the illustration.
+% Please note that short captions are centered, while long ones are
+% justified by the macro package automatically.} \label{fig1}
+% \end{figure}
+
+% \begin{theorem}
+% This is a sample theorem. The run-in heading is set in bold, while
+% the following text appears in italics. Definitions, lemmas,
+% propositions, and corollaries are styled the same way.
+% \end{theorem}
+% %
+% % the environments 'definition', 'lemma', 'proposition', 'corollary',
+% % 'remark', and 'example' are defined in the LLNCS documentclass as well.
+% %
+% \begin{proof}
+% Proofs, examples, and remarks have the initial word in italics,
+% while the following text appears in normal font.
+% \end{proof}
+% For citations of references, we prefer the use of square brackets
+% and consecutive numbers. Citations using labels or the author/year
+% convention are also acceptable. The following bibliography provides
+% a sample reference list with entries for journal
+% articles~\cite{ref_article1}, an LNCS chapter~\cite{ref_lncs1}, a
+% book~\cite{ref_book1}, proceedings without editors~\cite{ref_proc1},
+% and a homepage~\cite{ref_url1}. Multiple citations are grouped
+% \cite{ref_article1,ref_lncs1,ref_book1},
+% \cite{ref_article1,ref_book1,ref_proc1,ref_url1}.
+
+\section*{Acknowledgments}
+\label{sec:acknowledgments}
+This paper was sponsored by SOCOTEC Monitoring, in the framework of collaboration with CentraleSupélec. SOCOTEC Monitoring sponsored the team of co-authors C. Kfoury, F. Pinard and T. Zerr, in the context of their undergraduate engineering project at CentraleSupélec, called \textit{Jean Muller} project, proposed by the third-year \textit{Sciences et Ingénieries de la Constructions} track at CentraleSupélec.
+%
+% ---- Bibliography ----
+%
+% BibTeX users should specify bibliography style 'splncs04'.
+% References will then be sorted and formatted in the correct style.
+%
+\bibliographystyle{splncs04}
+\bibliography{mybibliography}
+
+\end{document}

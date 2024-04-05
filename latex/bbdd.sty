@@ -1,0 +1,135 @@
+%%
+%% This is file `bbdd.sty',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% bbdd.dtx  (with options: `package')
+%% 
+%% IMPORTANT NOTICE:
+%% 
+%% For the copyright see the source file.
+%% 
+%% You are *not* allowed to modify this file.
+%% 
+%% You are *not* allowed to distribute this file.
+%% For distribution of the original source see the terms
+%% for copying and modification in the file bbdd.dtx.
+%% 
+%% \CheckSum{772}
+%% \CharacterTable
+%%  {Upper-case    \A\B\C\D\E\F\G\H\I\J\K\L\M\N\O\P\Q\R\S\T\U\V\W\X\Y\Z
+%%   Lower-case    \a\b\c\d\e\f\g\h\i\j\k\l\m\n\o\p\q\r\s\t\u\v\w\x\y\z
+%%   Digits        \0\1\2\3\4\5\6\7\8\9
+%%   Exclamation   \!     Double quote  \"     Hash (number) \#
+%%   Dollar        \$     Percent       \%     Ampersand     \&
+%%   Acute accent  \'     Left paren    \(     Right paren   \)
+%%   Asterisk      \*     Plus          \+     Comma         \,
+%%   Minus         \-     Point         \.     Solidus       \/
+%%   Colon         \:     Semicolon     \;     Less than     \<
+%%   Equals        \=     Greater than  \>     Question mark \?
+%%   Commercial at \@     Left bracket  \[     Backslash     \\
+%%   Right bracket \]     Circumflex    \^     Underscore    \_
+%%   Grave accent  \`     Left brace    \{     Vertical bar  \|
+%%   Right brace   \}     Tilde         \~}
+\ProvidesPackage{bbdd}[2000/08/16 Bbdd symbol package]
+\message{Caracteres speciaux Blackboard grecs - SGDG}
+\NeedsTeXFormat{LaTeX2e}
+\RequirePackage{amsfonts}
+\let\@ddfonts=T
+\newif \ifbold
+\boldfalse
+\newif \ifpoor
+\poorfalse
+\DeclareOption{bold}{\boldtrue\typeout{version bold... use package bm}}
+\DeclareOption{poor}{\poortrue\typeout{version pauvre... a ameliorer}}
+\ProcessOptions
+\ifpoor
+  \def\Epsilon{{\mathrm{E}}}
+  \def\dEpsil{{\mathbb{E}}}
+  \def\Chi{{\mathrm{X}}}
+  \def\dChi{{\mathbb{X}}}
+  \def\Alpha{{\mathrm{A}}}
+  \def\dAlpha{{\mathbb{A}}}
+  \def\Beta{{\mathrm{B}}}
+  \def\dBeta{{\mathbb{B}}}
+  \def\dKrm{{\mathbb{K}}}
+  \def\dArm{{\mathbb{A}}}
+  \def\dGrm{{\mathbb{G}}}
+  \def\dsigma{\sigma\kern-.5em{\sigma}}
+  \def\dSigma{\Sigma\kern-.55em{\Sigma}}
+  \def\depsil{\varepsilon\kern-.40em{\varepsilon}}
+  \def\dpi   {\pi\kern-.55em{\pi}}
+  \def\dkrm  {{\rm k}\kern-.5em{\rm k}}
+  \def\darm  {{\rm a}\kern-.40em{\rm a}}
+  \def\dchi  {\chi\kern-.55em{\chi}}
+  \def\dalpha{\alpha\kern-.55em{\alpha}}
+  \def\dbeta {\beta\kern-.55em{\beta}}
+  \def\dgrm  {{\rm g}\kern-.40em{\rm g}}
+  \def\dOmega  {\Omega\kern-.6em{\Omega}}
+  \def\dlambda {\lambda\kern-.50em{\lambda}}
+  \def\dLambda {\Lambda\kern-.55em{\Lambda}}
+\else
+  \ifbold
+    \def\Epsilon{{\mathrm{E}}}
+    \def\dEpsil{\bm{\mathrm{E}}}
+    \def\Chi{{\mathrm{X}}}
+    \def\dChi{\bm{\mathrm{X}}}
+    \def\Alpha{{\mathrm{A}}}
+    \def\dAlpha{\bm{\mathrm{A}}}
+    \def\Beta{{\mathrm{B}}}
+    \def\dBeta{\bm{\mathrm{B}}}
+    \def\dKrm{\bm{\mathrm{K}}}
+    \def\dArm{\bm{\mathrm{A}}}
+    \def\dGrm{\bm{\mathrm{G}}}
+    \RequirePackage{bm}
+    \def\dsigma{\bm{\sigma}}
+    \def\dSigma{\bm{\Sigma}}
+    \def\depsil{\bm{\varepsilon}}
+    \def\dpi   {\bm{\pi}}
+    \def\dkrm  {\bm{\mathrm{k}}}
+    \def\darm  {\bm{\mathrm{a}}}
+    \def\dchi  {\bm{\chi}}
+    \def\dalpha{\bm{\alpha}}
+    \def\dbeta {\bm{\beta}}
+    \def\dgrm  {\bm{\mathrm{g}}}
+    \def\dOmega  {\bm{\Omega}}
+    \def\dlambda {\bm{\lambda}}
+    \def\dLambda {\bm{\Lambda}}
+  \else
+  \def\Epsilon{{\mathrm{E}}}
+  \def\dEpsil{{\mathbb{E}}}
+  \def\Chi{{\mathrm{X}}}
+  \def\dChi{{\mathbb{X}}}
+  \def\Alpha{{\mathrm{A}}}
+  \def\dAlpha{{\mathbb{A}}}
+  \def\Beta{{\mathrm{B}}}
+  \def\dBeta{{\mathbb{B}}}
+  \def\dKrm{{\mathbb{K}}}
+  \def\dArm{{\mathbb{A}}}
+  \def\dGrm{{\mathbb{G}}}
+  \newcommand{\bbddfamily}{\fontencoding{U}\fontfamily{bbdd}\selectfont}
+  \newcommand{\textbbdd}[1]{{\bbddfamily#1}}
+  \DeclareMathAlphabet{\mathbbdd}{U}{bbdd}{m}{n}
+  \DeclareSymbolFont{DDb}{U}{bbdd}{m}{n}
+  \begingroup
+    \DeclareMathSymbol{\dsigma} {\mathord}{DDb}{27}
+    \DeclareMathSymbol{\dSigma} {\mathord}{DDb}{6}
+    \DeclareMathSymbol{\depsil} {\mathord}{DDb}{34}
+    \DeclareMathSymbol{\dpi}    {\mathord}{DDb}{25}
+    \DeclareMathSymbol{\dkrm}   {\mathord}{DDb}{107}
+    \DeclareMathSymbol{\darm}   {\mathord}{DDb}{97}
+    \DeclareMathSymbol{\dchi}   {\mathord}{DDb}{31}
+    \DeclareMathSymbol{\dalpha} {\mathord}{DDb}{11}
+    \DeclareMathSymbol{\dbeta}  {\mathord}{DDb}{12}
+    \DeclareMathSymbol{\dgrm}   {\mathord}{DDb}{103}
+    \DeclareMathSymbol{\dOmega} {\mathord}{DDb}{10}
+    \DeclareMathSymbol{\dlambda} {\mathord}{DDb}{21}
+    \DeclareMathSymbol{\dLambda} {\mathord}{DDb}{3}
+  \endgroup
+  \DeclareSymbolFontAlphabet{\mathbbdd}{DDb}
+  \fi
+\fi
+\endinput
+%%
+%% End of file `bbdd.sty'.

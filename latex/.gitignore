@@ -1,0 +1,16 @@
+*.abs
+*.vrb
+*.aux
+*.toc
+*.bbl
+*.blg
+*.log
+*.synctex.gz
+*.spl
+*-eps-converted-to.pdf
+*.pdf
+*.nav
+*.snm
+*.out
+*.bcf
+*.run.xml
