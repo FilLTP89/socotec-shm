@@ -92,7 +92,9 @@ da_r = np.stack(
 da_t = np.stack(
                 [b.compute().T for b in da[:, 1].blocks if b.size == rec]
                 ).reshape(-1, 1, rec)
-T = np.stack([b.mean().compute() for b in da[:, 2].blocks if b.size == rec])
+T = np.stack(
+             [b.mean().compute() for b in da[:, 2].blocks if b.size == rec]
+             )
 # da = [b for b in da] if b.size == rec
 # da 
 #https: // stackoverflow.com/questions/72015205/iterating-through-dask-array-chunks
@@ -101,13 +103,13 @@ dmds = [HODMD(svd_rank=0,
               forward_backward=True,
               exact=True,
               opt=True,
-              d=100)]
+              d=1000) for _ in T[:100]]
 pdmd = ParametricDMD(dmds,
                      POD(svd_rank=-1),
                      RBF())
 
 pdb.set_trace()
-pdmd.fit(da_r,T)
+pdmd.fit(da_r[:100,:,:],T[:100,])
 
 #######
 # X_r = df.loc["2016-10-26 17:11:40":"2016-10-26 17:26:39",
